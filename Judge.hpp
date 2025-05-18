@@ -1,0 +1,3 @@
+class Judge : public Player {
+    
+};
