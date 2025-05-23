@@ -3,19 +3,37 @@
 class Player
 {
 private:
-    Game game;
+    int playerCoins;
     string name;
-    int coins;
+    bool isSanctioned;
+    bool arrestFunctionFlag;
+    bool coupImmune;
+    string lastArrested;
+    string lastAction;
+    
+
+protected:
+    string type;
+    Game game;
+    virtual void setSanctioned();
 public:
-    Player(Game &game, string name) : game(game), name(name) {
-        game.add_player(name);
-    }
-    int coins() const { return coins; }
-    void gather(){coins++;}
-    void tax(){coins+=2;}
-    void bribe(){coins-=3;}
+    Player(Game &game, string name);
+    Player(const Player &other);
+    Player &operator=(const Player &other);
+    int coins() const;
+    void gather();
+    virtual void tax();
+    void bribe();
     void arrest(Player &target);
     void sanction(Player &target);
     void coup(Player &target);
-    ~Player();  
+    string getName() const;
+    ~Player();
+    void addCoins(int coins);
+    void removeCoins(int coins);  
+    void setCanceledArrest();
+    void setCoupImmune();
+    string getType() const;
+    void undo(Player &target);
+    string getLastAction() const;
 };

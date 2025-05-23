@@ -1,11 +1,13 @@
+#pragma once
 #include "Player.hpp"
+#include <string>
 
 class Governor : public Player
 {
 public:
-    Governor(Game &game, const string &name) : Player(game, name) {}
+    Governor(Game &game, const string &name);
 
-    void tax();
-    void undo();
+    void tax() override;
+    void undo(Player &target);
 
 };

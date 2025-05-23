@@ -3,5 +3,7 @@ class Spy : public Player
 {
 public:
     Spy(Game &game, const string &name) : Player(game, name) {}
-    void watchCoins(Player &target);
+    int watchCoins(Player &target);
+    void cancelArrest(Player &target);
+    
 };
