@@ -1,7 +1,10 @@
-class Baron : public Player {
-    public:
-        Baron(Game &game, string name);
-        ~Baron();
-        Baron(const Baron &other);
-        void invest();
-};
+#pragma once
+using std::string;
+
+namespace coup {
+    class Baron : public Player {
+        public:
+            Baron(Game &game, string name);
+            void invest();
+    };
+}

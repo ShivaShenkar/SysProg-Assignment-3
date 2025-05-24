@@ -1,39 +1,33 @@
-
+#pragma once
 #include "Game.hpp"
-class Player
+namespace coup
 {
-private:
-    int playerCoins;
-    string name;
-    bool isSanctioned;
-    bool arrestFunctionFlag;
-    bool coupImmune;
-    string lastArrested;
-    string lastAction;
-    
+    class Player
+    {
+    protected:  
+        Game game;
+        int playerCoins;
+    public:
+        string type;
+        string name,lastArrested;
+        bool isSanctioned,isAbleToArrest,isCoupImmune,lastActionWasTax,bribeFlag;  
+        Player(Game &game, string name);
 
-protected:
-    string type;
-    Game game;
-    virtual void setSanctioned();
-public:
-    Player(Game &game, string name);
-    Player(const Player &other);
-    Player &operator=(const Player &other);
-    int coins() const;
-    void gather();
-    virtual void tax();
-    void bribe();
-    void arrest(Player &target);
-    void sanction(Player &target);
-    void coup(Player &target);
-    string getName() const;
-    ~Player();
-    void addCoins(int coins);
-    void removeCoins(int coins);  
-    void setCanceledArrest();
-    void setCoupImmune();
-    string getType() const;
-    void undo(Player &target);
-    string getLastAction() const;
-};
+        //mandatory methods from guide + methods from demo.cpp
+        int coins() const;
+        void gather();
+        virtual void tax();
+        void bribe();
+        void arrest(Player &target);
+        void sanction(Player &target);
+        void coup(Player &target);
+        void undo(Player &target);
+
+        void checkBeforeAction(string action,int price, Player *target =nullptr);
+        void doAfterAction();
+        //rule of three
+        Player(const Player &other);
+        Player &operator=(const Player &other);
+        ~Player();
+    };
+}

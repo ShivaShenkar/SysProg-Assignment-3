@@ -22,7 +22,6 @@ int main() {
     Baron baron(game_1, "Meirav");
     General general(game_1, "Reut");
     Judge judge(game_1, "Gilad");
-
     vector<string> players = game_1.players();
     
     // Expected output:
