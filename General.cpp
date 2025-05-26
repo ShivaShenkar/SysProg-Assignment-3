@@ -1,5 +1,4 @@
-using namespace coup;
-#include "Player.hpp"
+
 #include "General.hpp"
 namespace coup
 {

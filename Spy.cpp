@@ -1,7 +1,5 @@
 
 #include "Spy.hpp"
-#include <string>
-using std::string;
 namespace coup{
     Spy::Spy(Game &game, const string &name) : Player(game, name) {
         type = "Spy";

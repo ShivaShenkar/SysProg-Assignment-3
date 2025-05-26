@@ -1,12 +1,12 @@
 # Compiler and flags
-CXX = clang++
+CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
 # Target executable
 TARGET = demo
 
 # Source files
-SRCS = Demo.cpp
+SRCS = Demo.cpp Baron.cpp Game.cpp General.cpp Governor.cpp Judge.cpp Merchant.cpp Player.cpp Spy.cpp
 
 all: $(TARGET)
 

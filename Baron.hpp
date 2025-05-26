@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+#include "Player.hpp"
+#include "Game.hpp"
 using std::string;
 
 namespace coup {
