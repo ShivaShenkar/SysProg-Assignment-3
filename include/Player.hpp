@@ -12,7 +12,7 @@ namespace coup
     class Player
     {
     protected:  
-        Game game;
+        Game& game;
         int playerCoins;
         virtual void checkBeforeAction(string action,int price, Player *target =nullptr);
         void doAfterAction(bool lastActionWasTax=false,string nameArrested="");
@@ -35,9 +35,6 @@ namespace coup
         
         void removeCoins(int amount);
         void addCoins(int amount); 
-        //rule of three
-        Player(const Player &other);
-        Player &operator=(const Player &other);
-        ~Player();
+        
     };
 }

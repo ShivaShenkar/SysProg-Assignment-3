@@ -9,7 +9,6 @@ namespace coup{
     class Game{
         public:
             Game();
-            ~Game();
             void add_player(string name);
             string turn() const;
             vector<string> players() const ;

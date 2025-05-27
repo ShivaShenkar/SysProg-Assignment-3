@@ -1,19 +1,32 @@
 # Compiler and flags
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
 # Target executable
-TARGET = demo
+TARGETDEMO = bin/demo.out
+TARGET = bin/main.out
+TARGETTEST = bin/test.out
 
 # Source files
-SRCS = Demo.cpp Baron.cpp Game.cpp General.cpp Governor.cpp Judge.cpp Merchant.cpp Player.cpp Spy.cpp
+SRCS = src/*.cpp
+DEMOSRCS = $(SRCS) demo/Demo.cpp
+TESTSRCS=
+
+test: $(TARGETTEST)
+$(TARGETTEST): $(TESTSRCS)
+	$(CXX) $(CXXFLAGS) -g -o $@ $^
+
+demo:$(TARGETDEMO)
+
+$(TARGETDEMO): $(DEMOSRCS)
+	$(CXX) $(CXXFLAGS) -g -o $@ $^
 
 all: $(TARGET)
 
-# Build target
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)
+$(TARGET): $(SRCS) 
+	$(CXX) $(CXXFLAGS) -g -o $@ $^
 
-# Clean target
 clean:
-	rm -f $(TARGET)
+	rm -rf bin/*
+
+.PHONY: all clean demo

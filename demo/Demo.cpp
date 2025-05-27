@@ -1,12 +1,12 @@
 
-#include "Player.hpp"
-#include "Governor.hpp"
-#include "Spy.hpp"
-#include "Baron.hpp"
-#include "General.hpp"
-#include "Judge.hpp"
-#include "Merchant.hpp"
-#include "Game.hpp"
+#include "../include/Player.hpp"
+#include "../include/Governor.hpp"
+#include "../include/Spy.hpp"
+#include "../include/Baron.hpp"
+#include "../include/General.hpp"
+#include "../include/Judge.hpp"
+#include "../include/Merchant.hpp"
+#include "../include/Game.hpp"
 
 #include <exception>
 #include <iostream>
@@ -36,7 +36,6 @@ int main() {
 
     // Expected output: Moshe
     cout << game_1.turn() << endl;
-
     governor.gather();
     spy.gather();
     baron.gather();

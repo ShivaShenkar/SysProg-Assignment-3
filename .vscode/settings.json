@@ -43,6 +43,14 @@
         "ostream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "ratio": "cpp"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/lior-laptop/maarachot/assignment3",
+            "binaryPath": "/home/lior-laptop/maarachot/assignment3/demo",
+            "binaryArgs": []
+        }
+    ]
 }

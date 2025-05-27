@@ -1,4 +1,4 @@
-#include "Governor.hpp"
+#include "../include/Governor.hpp"
 namespace coup {
     Governor::Governor(Game &game, const string &name) : Player(game, name) {
         type = "Governor";

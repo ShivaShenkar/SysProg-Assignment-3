@@ -1,4 +1,5 @@
-#include "Game.hpp"
+#include "../include/Game.hpp"
+#include <iostream>
 
 namespace coup {
     Game::Game(): current_turn(0){}
@@ -27,12 +28,18 @@ namespace coup {
         return false;
     }
     void Game::remove_player(string name) {
+
         for (size_t i = 0; i < players_list.size(); ++i) {
             if (players_list[i] == name) {
                 players_list.erase(players_list.begin() + i);
+                if(current_turn>i)
+                    current_turn--;
+
                 return;
             }
         }
         throw std::invalid_argument("Player not found");
+
+        
     }
 }

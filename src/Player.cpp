@@ -1,4 +1,4 @@
-#include "Player.hpp"
+#include "../include/Player.hpp"
 
 namespace coup{
 
@@ -13,6 +13,7 @@ namespace coup{
     void Player::gather() {
         checkBeforeAction("gather", 0);
         addCoins(1);
+        doAfterAction();
     }
 
 
@@ -29,6 +30,7 @@ namespace coup{
             throw std::runtime_error("You cannot bribe twice in a row");
         }
         bribeFlag = true;
+        doAfterAction();
     }
 
 
@@ -36,20 +38,35 @@ namespace coup{
         checkBeforeAction("arrest", 0, &target);
         if(target.type!="General"){
             if(target.type=="Merchant"){
-                if(target.coins()<2){
-                    game.remove_player(target.name);
-                    cout<< "The player " << target.name << " went bankrupt and is kicked out of the game." << endl;
+                switch (target.coins()) 
+                {
+                case 0: 
+                    cout<< "The player " << target.name << " has no coins to pay for arrest." << endl;
+                    break;
+                case 1:
+                    target.removeCoins(1);
+                    addCoins(1);
+                    break;
+                
+                default:
+                    target.removeCoins(2);
+                    break;
                 }
-                target.removeCoins(2);
             }
             else{
-                if(target.coins()<1){
-                    game.remove_player(target.name);
-                    cout<< "The player " << target.name << " went bankrupt and is kicked out of the game." << endl;
+                if(target.coins()<1)
+                    cout<< "The player " << target.name << " has no coins to pay for arrest." << endl;
+                else{
+                    target.removeCoins(1);
+                    addCoins(1);
                 }
-                target.removeCoins(1);
-                addCoins(1);
             }
+        }
+        else{
+            if(target.coins()==0)
+                cout<< "The general " << target.name << " has no coins to pay for arrest." << endl;
+            else
+                cout<<"The general " << target.name << "was arrested but recieved his coin back" << endl;
         }
         doAfterAction(false, target.name);
     }
@@ -87,12 +104,13 @@ namespace coup{
     }
 
 
-    void Player::checkBeforeAction(string action,int price, Player *target =nullptr) {
+    void Player::checkBeforeAction(string action,int price, Player *target) {
         if (!game.has_name(name))
             throw std::runtime_error("Player not found in the game");
         
         if(action!="undo"){    
             if(game.turn() != name) {
+
                 throw std::runtime_error("It's not your turn");
                 
             }
@@ -122,25 +140,28 @@ namespace coup{
                 throw std::runtime_error("You cannot arrest the same player twice in a row");
             }
         }
-        if(playerCoins>=10 && action!="coup") {
-            throw std::runtime_error("You have 10 or more coins, you must coup");
+        if(action!="watchCoins"&&action!="cancelArrest"&&action!="undo"){
+            if(playerCoins>=10 && action!="coup") {
+                throw std::runtime_error("You have 10 or more coins, you must coup");
 
+            }
         }
-    
-        removeCoins(price);
+        if(action!="invest")
+            removeCoins(price);
 
     }
 
-    void Player::doAfterAction(bool lastActionWasTax=false,string nameArrested="") {
+    void Player::doAfterAction(bool lastActionWasTax,string nameArrested) {
         if(bribeFlag) {
             bribeFlag = false;
         }
-        else
+        else{
             game.next_turn();
-        isSanctioned = false;
-        isAbleToArrest = true;
-        this->lastActionWasTax = lastActionWasTax;
-        lastArrested = nameArrested;
+            isSanctioned = false;
+            isAbleToArrest = true;
+            this->lastActionWasTax = lastActionWasTax;
+            lastArrested = nameArrested;
+        }
     }
     
     void Player::removeCoins(int amount) {
@@ -156,15 +177,6 @@ namespace coup{
         playerCoins += amount;
     }
 
-
-    Player &Player::operator=(const Player &other) {
-        if (this != &other) {
-            game = other.game;
-            name = other.name;
-            playerCoins = other.playerCoins;
-        }
-        return *this;
-    }
     int Player:: coins() const{
         return playerCoins;
     }

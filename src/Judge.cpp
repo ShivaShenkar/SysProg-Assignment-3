@@ -1,4 +1,4 @@
-#include "Judge.hpp"
+#include "../include/Judge.hpp"
 
 namespace coup{
     Judge::Judge(Game &game, string name) : Player(game, name) {
