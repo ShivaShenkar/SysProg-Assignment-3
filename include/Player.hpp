@@ -14,8 +14,8 @@ namespace coup
     protected:  
         Game& game;
         int playerCoins;
-        virtual void checkBeforeAction(string action,int price, Player *target =nullptr);
-        void doAfterAction(bool lastActionWasTax=false,string nameArrested="");
+        void checkBeforeAction(string action,int price, Player *target =nullptr);
+        virtual void doAfterAction(bool lastActionWasTax=false,string nameArrested="");
     public:
         string type;
         string name,lastArrested;

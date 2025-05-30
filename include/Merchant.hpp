@@ -3,7 +3,7 @@
 namespace coup{
     class Merchant : public Player {    
     protected:
-        void checkBeforeAction(std::string action, int price, Player *target = nullptr) override;
+        void doAfterAction(bool lastActionWasTax=false, std::string nameArrested="") override;
     public:
         Merchant(Game &game, const std::string &name);
         

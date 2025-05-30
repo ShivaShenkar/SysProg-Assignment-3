@@ -15,6 +15,7 @@ namespace coup{
             void next_turn();
             bool has_name(string name) const;
             void remove_player(string name);
+            bool is_game_on() ;
         private:
             vector<string> players_list;
             int current_turn;

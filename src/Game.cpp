@@ -42,4 +42,7 @@ namespace coup {
 
         
     }
+    bool Game::is_game_on()  {
+        return players_list.size()>1;
+    }
 }

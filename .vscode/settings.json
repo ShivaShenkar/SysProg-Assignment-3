@@ -44,12 +44,31 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "condition_variable": "cpp",
+        "csignal": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "sstream": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     },
     "makefile.launchConfigurations": [
         {
             "cwd": "/home/lior-laptop/maarachot/assignment3",
             "binaryPath": "/home/lior-laptop/maarachot/assignment3/demo",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/lior-laptop/maarachot/assignment3/bin",
+            "binaryPath": "/home/lior-laptop/maarachot/assignment3/bin/main.out",
             "binaryArgs": []
         }
     ]

@@ -30,7 +30,6 @@ namespace coup{
             throw std::runtime_error("You cannot bribe twice in a row");
         }
         bribeFlag = true;
-        doAfterAction();
     }
 
 
