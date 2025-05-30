@@ -1,18 +1,5 @@
 # SysProg-Assignment-3
 
-````
-
-````
-
-
-Made changes.
-
-Here is a detailed and comprehensive README section for your project, covering all requested categories:
-
----
-
-# SysProg-Assignment-3
-
 ## Overview
 This project is a C++ implementation of a turn-based strategy game inspired by Coup, featuring a graphical user interface (GUI) built with SFML. Players assume unique roles, each with special abilities, and interact through actions such as gathering coins, taxing, bribing, arresting, sanctioning, and performing coups. The game supports both GUI and demo/test modes.
 
@@ -72,5 +59,3 @@ This project is a C++ implementation of a turn-based strategy game inspired by C
 - **Linux Compatibility**: Developed and tested on Linux. Ensure SFML libraries are installed.
 
 ---
-
-You can copy and paste this into your README.md. If you want this inserted automatically, please let me know once your quota allows file edits again.
