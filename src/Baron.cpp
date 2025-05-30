@@ -1,3 +1,4 @@
+//fikhman2005@gmail.com
 #include "../include/Baron.hpp"
 namespace coup{
     Baron::Baron(Game &game, string name) : Player(game, name){

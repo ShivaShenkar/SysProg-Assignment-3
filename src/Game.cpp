@@ -1,10 +1,17 @@
+//fikhman2005@gmail.com
 #include "../include/Game.hpp"
 #include <iostream>
 
 namespace coup {
     Game::Game(): current_turn(0){}
     void Game::add_player(string name) {
-        players_list.push_back(name);
+        if(!is_game_on()) {
+            players_list.push_back(name);
+            
+        }
+        else
+            throw std::runtime_error("Game is active, cannot add players");
+        
     }
     string Game::turn() const {
         if (players_list.empty()) {
@@ -43,6 +50,12 @@ namespace coup {
         
     }
     bool Game::is_game_on()  {
-        return players_list.size()>1;
+        return is_game_active;
+    }
+    int Game::get_turn_indexI() const {
+        return current_turn;
+    }
+    void Game::set_game_active() {
+        is_game_active = true;
     }
 }

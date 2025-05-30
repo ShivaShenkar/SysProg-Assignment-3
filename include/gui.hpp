@@ -1,4 +1,6 @@
+//fikhman2005@gmail.com
 #pragma once
+#include "PopupWindow.hpp"
 #include "PlayerEntry.hpp"
 #include "PlayerController.hpp"
 #include <iostream>
@@ -19,12 +21,13 @@ class GUI{
         sf::Font titleFont;
         void gameSettings();
         void gamePage(vector<PlayerEntry>& playerEntries);
-        void actionInterface(string actionName, Player& player, std::vector<std::unique_ptr<Player>>& players);
+        Player* actionInterface(string actionName, Player& player, std::vector<std::unique_ptr<Player>>& players, Game& game);
+        void victoryPage(const std::string& winner);
     public:
         GUI();
         void startGame();
         
-};
+    };
 void organizeList(std::vector<PlayerEntry>& playerEntries);
 
 

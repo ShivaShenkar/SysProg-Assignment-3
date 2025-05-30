@@ -1,3 +1,4 @@
+#fikhman2005@gmail.com
 # Compiler and flags
 CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++17
@@ -12,11 +13,16 @@ TARGETTEST = bin/test.out
 SRCS = src/*.cpp
 SRCGUI = src/gui/*.cpp
 DEMOSRCS = $(SRCS) demo/Demo.cpp
-# TESTSRC=
+TESTSRCS = $(SRCS) tests/tests.cpp
 
-# test: $(TARGETTEST)
-# $(TARGETTEST): $(TESTSRCS)
-# 	$(CXX) $(CXXFLAGS) -g -o $@ $^
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all $(TARGETMAIN)
+	valgrind --leak-check=full --show-leak-kinds=all $(TARGETDEMO)
+	valgrind --leak-check=full --show-leak-kinds=all $(TARGETTEST)
+
+test: $(TARGETTEST)
+$(TARGETTEST): $(TESTSRCS)
+	$(CXX) $(CXXFLAGS) -g -o $@ $^
 
 demo:$(TARGETDEMO)
 

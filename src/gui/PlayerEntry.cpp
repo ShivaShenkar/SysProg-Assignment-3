@@ -1,3 +1,4 @@
+//fikhman2005@gmail.com
 #include "../../include/PlayerEntry.hpp"
 
 PlayerEntry::PlayerEntry(string name,string role,sf::Font& font, float y):deleteButton(Button(600, y, 100, 40, "Delete", font, sf::Color::Red)) {

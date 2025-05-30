@@ -1,3 +1,5 @@
+//fikhman2005@gmail.com
+
 #include "../../include/gui.hpp"
 
 
@@ -5,6 +7,19 @@
 void organizeList(std::vector<PlayerEntry>& playerEntries) {
     for (size_t i = 0; i < playerEntries.size(); ++i) {
         playerEntries[i].setPosition(150 + 50 * i);
+    }
+}
+
+void organizeControllers(std::vector<std::unique_ptr<PlayerController>>& playerControllers) {
+    for (size_t i = 0; i < playerControllers.size(); ++i) {
+        float newY = 50 + 100 * i;
+        playerControllers[i]->playerNameText.setPosition(50, newY);
+        playerControllers[i]->playerCoinsText.setPosition(200, newY);
+        playerControllers[i]->playerRoleText.setPosition(350, newY);
+        auto& buttons = const_cast<std::vector<Button>&>(playerControllers[i]->getActionButtons());
+        for (size_t j = 0; j < buttons.size(); ++j) {
+            buttons[j].setPosition(50 + j * (85 + 8), newY + 40);
+        }
     }
 }
 
@@ -106,7 +121,10 @@ void GUI::gameSettings() {
                     }
                 }
                 if(startGameButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))){
-                    gamePage(playerEntries);
+                    if(playerEntries.size() >= 2) {
+                        gamePage(playerEntries);
+                    }
+                    
                 }
                 
             }
@@ -134,6 +152,8 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
     Game game;
     std::vector<std::unique_ptr<Player>> players;
     std::vector<std::unique_ptr<PlayerController>> playerControllers;
+
+
     for(const PlayerEntry& entry : playerEntries) {
         std::string role = entry.roleText.getString().toAnsiString();
         std::string name = entry.nameText.getString().toAnsiString();
@@ -170,16 +190,17 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
             if (event.type == sf::Event::MouseButtonPressed &&
                 event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                for (size_t i = 0; i < playerControllers.size(); ++i) {
-                    PlayerController& controller = *playerControllers[i];
-                    Player& player = controller.getPlayer();
-                    const vector<Button>& buttons = controller.getActionButtons();
-                    for (size_t j = 0; j < buttons.size(); ++j) {
+
+                PlayerController& controller = *playerControllers[game.get_turn_indexI()];
+                Player& player = controller.getPlayer();
+                const vector<Button>& buttons = controller.getActionButtons();
+                for (size_t j = 0; j < buttons.size(); ++j) {
                         const Button& btn = buttons[j];
-                        if (btn.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))&&player.name==game.turn()) {
+                        if (btn.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
                             std::string label = btn.getLabel();
+                            string msg;
                             try {
-                                size_t prevPlayerCount = players.size();
+                                
                                 if (label == "Gather") {
                                     player.gather();
                                     controller.playerCoinsText.setString("Coins: " + std::to_string(player.coins()));
@@ -189,6 +210,12 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
                                     controller.playerCoinsText.setString("Coins: " + std::to_string(player.coins()));
                                     std::cout << player.name << " performed Tax." << std::endl;
                                 } else if (label == "Bribe") {
+                                    if(player.coins() < 4) {
+                                        msg = "You need at least 4 coins to Bribe.";
+                                        PopupWindow popup("Insufficient Coins", msg, mainFont);
+                                        popup.draw();
+                                        continue;
+                                    }
                                     player.bribe();
                                     controller.playerCoinsText.setString("Coins: " + std::to_string(player.coins()));
                                     std::cout << player.name << " performed Bribe." << std::endl;
@@ -204,91 +231,74 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
                                     }
                                 }
                                 else if(label=="Arrest"){
-                                    actionInterface("Arrest", player, players);
+                                    actionInterface("Arrest", player, players,game);
                                 }
                                 else if(label=="Sanction"){
                                     if(player.coins()>=3){
-                                        actionInterface("Sanction", player, players);
+                                        actionInterface("Sanction", player, players,game);
+                                    }
+                                    else{
+                                        msg = "You need at least 3 coins to Sanction.";
+                                        PopupWindow popup("Insufficient Coins", msg, mainFont);
+                                        popup.draw();
                                     }
                                 }
-                                else if(label=="Coup"){
-                                    if(player.coins()>=7){
-                                        actionInterface("Coup", player, players);
+                                else if (label == "Coup") {
+                                    size_t prevPlayerCount = players.size();
+                                    if (player.coins() >= 7) {
+                                        Player* target = actionInterface("Coup", player, players,game);
+                                        cout<<players.size()<<endl;
+                                        if (target != nullptr && game.players().size() < prevPlayerCount) {
+                                            int targetIdx = -1;
+                                            for (size_t i = 0; i < players.size(); ++i) {
+                                                if (players[i].get()->name == target->name) {
+                                                    targetIdx = i;
+                                                    break;
+                                                }
+                                            }
+                                            if (targetIdx != -1) {
+                                                players.erase(players.begin() + targetIdx);
+                                                playerControllers.erase(playerControllers.begin() + targetIdx);
+                                                organizeControllers(playerControllers);
+                                            }
+                                        }
                                     }
-
+                                    else {
+                                        msg = "You need at least 7 coins to perform a Coup.";
+                                        PopupWindow popup("Insufficient Coins", msg, mainFont);
+                                        popup.draw();
+                                    }
                                 }
-                                else if(label=="Coup Immune"){
+                                else if(label=="Coup\nImmune"){
                                     if(player.coins()>=5){
-                                        actionInterface("Coup Immune", player, players);
+                                        actionInterface("Coup Immune", player, players,game);
+                                    }
+                                    else {
+                                        msg = "You need at least 5 coins to perform Coup Immune.";
+                                        PopupWindow popup("Insufficient Coins", msg, mainFont);
+                                        popup.draw();
                                     }
                                 }
                                 else if(label=="Undo"){
-                                    actionInterface("Undo", player, players);
+                                    actionInterface("Undo", player, players,game);
                                 }
-                                else if(label=="Watch Coins"){
-                                    actionInterface("Watch Coins", player, players);
+                                else if(label=="Watch\nCoins"){
+                                    actionInterface("Watch Coins", player, players,game);
                                 }
-                                else if(label=="Cancel Arrest"){
-                                    actionInterface("Cancel Arrest", player, players);
+                                else if(label=="Cancel\nArrest"){
+                                    actionInterface("Cancel Arrest", player, players,game);
                                 }
                                 else {
                                     throw std::runtime_error("Unknown action: " + label);
                                 }
-                                // After action, check if a player was removed (e.g., by coup)
-                                if (players.size() < prevPlayerCount) {
-                                    // Remove PlayerController for any missing player
-                                    for (size_t k = 0; k < playerControllers.size(); ) {
-                                        Player* ctrlPlayer = &playerControllers[k]->getPlayer();
-                                        bool found = false;
-                                        for (const auto& p : players) {
-                                            if (p.get() == ctrlPlayer) {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found) {
-                                            playerControllers.erase(playerControllers.begin() + k);
-                                            // Don't increment k, as erase shifts elements
-                                        } else {
-                                            ++k;
-                                        }
-                                    }
-                                    // Remove Player from players vector if not in game.players()
-                                    std::vector<std::string> ingameNames = game.players();
-                                    for (size_t k = 0; k < players.size(); ) {
-                                        bool found = false;
-                                        for (const auto& name : ingameNames) {
-                                            if (players[k]->name == name) {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found) {
-                                            players.erase(players.begin() + k);
-                                        } else {
-                                            ++k;
-                                        }
-                                    }
-                                    // Re-layout remaining PlayerControllers
-                                    for (size_t idx = 0; idx < playerControllers.size(); ++idx) {
-                                        float newY = 50 + 100 * idx;
-                                        playerControllers[idx]->playerNameText.setPosition(50, newY);
-                                        playerControllers[idx]->playerCoinsText.setPosition(200, newY);
-                                        playerControllers[idx]->playerRoleText.setPosition(350, newY);
-                                        // Move action buttons as well
-                                        auto& buttons = const_cast<std::vector<Button>&>(playerControllers[idx]->getActionButtons());
-                                        for (size_t b = 0; b < buttons.size(); ++b) {
-                                            buttons[b].setPosition(50 + b * (85 + 8), newY + 40);
-                                        }
-                                    }
-                                }
                             } 
                             catch(const std::exception& e) {
-                                std::cerr << "Error: " << e.what() << std::endl;
+                                string errMsg = "Error: " + std::string(e.what());
+                                PopupWindow popup("Action Error", errMsg, mainFont);
+                                popup.draw();
                             }
                         }
                     }
-                }
             }
         }
         window.clear(sf::Color::White);
@@ -313,8 +323,53 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
             controller->draw(window);
         }
         window.display();
+
+        // Check for victory condition
+        if (game.players().size() == 1) {
+            std::string winner = game.players()[0];
+            victoryPage(winner);
+            return;
+        }
     }
     
+}
+
+void GUI::victoryPage(const std::string& winner) {
+    window.clear(sf::Color::White);
+    sf::Text victoryText("Victory!", titleFont, 60);
+    victoryText.setFillColor(sf::Color::Green);
+    sf::FloatRect textRect = victoryText.getLocalBounds();
+    victoryText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    victoryText.setPosition(window.getSize().x / 2.0f, window.getSize().y / 4.0f);
+
+    sf::Text winnerText("Winner: " + winner, mainFont, 32);
+    winnerText.setFillColor(sf::Color::Black);
+    sf::FloatRect winnerRect = winnerText.getLocalBounds();
+    winnerText.setOrigin(winnerRect.left + winnerRect.width / 2.0f, winnerRect.top + winnerRect.height / 2.0f);
+    winnerText.setPosition(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
+
+    Button backButton(window.getSize().x / 2.0f - 100, window.getSize().y * 0.7f, 200, 60, "Back to Main Menu", mainFont, sf::Color::Blue);
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (backButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+                    startGame();
+                    return;
+                }
+            }
+        }
+        window.clear(sf::Color::White);
+        window.draw(victoryText);
+        window.draw(winnerText);
+        backButton.draw(window);
+        window.display();
+    }
 }
 
 
@@ -328,7 +383,7 @@ void GUI::gamePage(vector<PlayerEntry>& playerEntries) {
 
 
 // Show a popup for target selection and execute the action on the chosen player
-void GUI::actionInterface(string actionName, Player& player, std::vector<std::unique_ptr<Player>>& players) {
+Player* GUI::actionInterface(string actionName, Player& player, std::vector<std::unique_ptr<Player>>& players,Game& game) {
     // Find the current player index
     int selfIdx = -1;
     for (size_t i = 0; i < players.size(); ++i) {
@@ -337,18 +392,23 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
             break;
         }
     }
-    if (selfIdx == -1) return; // Should not happen
+    if (selfIdx == -1) return nullptr; 
 
     // Prepare popup window
     sf::RenderWindow popup(sf::VideoMode(350, 60 + 60 * (players.size() - 1)), "Select Target");
     std::vector<Button> targetButtons;
     int btnY = 30;
     for (size_t i = 0; i < players.size(); ++i) {
-        if ((int)i == selfIdx) continue; // Don't allow self-target
+        if ((int)i == selfIdx){
+            if(actionName=="Coup Immune")
+                targetButtons.emplace_back(50, btnY, 250, 40, players[i]->name, mainFont);
+            else
+                continue; // Don't allow self-target for other actions
+        }
         targetButtons.emplace_back(50, btnY, 250, 40, players[i]->name, mainFont);
         btnY += 60;
     }
-    Button cancelBtn(100, btnY, 120, 40, "Cancel", mainFont, sf::Color(200,200,200));
+    Button cancelBtn(100, btnY, 120, 40, "Cancel", mainFont, sf::Color::Red);
 
     std::string errorMsg = "";
     bool done = false;
@@ -356,9 +416,12 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
         sf::Event event;
         while (popup.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                
                 popup.close();
+                return nullptr;
             }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                string msg;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(popup);
                 // Check target buttons
                 int btnIdx = 0;
@@ -370,12 +433,19 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                             if (actionName == "Arrest") {
                                 player.arrest(*players[i]);
                                 std::cout << player.name << " arrested " << players[i]->name << std::endl;
+
                             } else if (actionName == "Sanction") {
                                 player.sanction(*players[i]);
                                 std::cout << player.name << " sanctioned " << players[i]->name << std::endl;
                             } else if (actionName == "Coup") {
+                                int prevPlayerCount = players.size();
                                 player.coup(*players[i]);
                                 std::cout << player.name << " performed Coup on " << players[i]->name << std::endl;
+                                msg = (prevPlayerCount>game.players().size()) ? 
+                                    players[i]->name + " has been removed from the game." : 
+                                    players[i]->name + " is Immune to Coup and wasn't removed.";
+                                PopupWindow popup("Coup Result", msg, mainFont);
+                                popup.draw();
                             } else if (actionName == "Coup Immune") {
                                 // Only General has this, dynamic_cast to General
                                 if (auto* gen = dynamic_cast<General*>(&player)) {
@@ -389,6 +459,7 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                                 if (auto* gov = dynamic_cast<Governor*>(&player)) {
                                     gov->undo(*players[i]);
                                     std::cout << player.name << " (Governor) undid action for " << players[i]->name << std::endl;
+                                    msg = "Action for " + players[i]->name + " has been undone.";
                                 } else if (auto* judge = dynamic_cast<Judge*>(&player)) {
                                     judge->undo(*players[i]);
                                     std::cout << player.name << " (Judge) undid action for " << players[i]->name << std::endl;
@@ -399,6 +470,9 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                                 if (auto* spy = dynamic_cast<Spy*>(&player)) {
                                     int coins = spy->watchCoins(*players[i]);
                                     std::cout << player.name << " (Spy) watched " << players[i]->name << "'s coins: " << coins << std::endl;
+                                    msg = players[i]->name + " has " + std::to_string(coins) + " coins.";
+                                    PopupWindow popup("Watch Coins", msg, mainFont);
+                                    popup.draw();
                                 } else {
                                     throw std::runtime_error("Only Spy can Watch Coins");
                                 }
@@ -406,6 +480,9 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                                 if (auto* spy = dynamic_cast<Spy*>(&player)) {
                                     spy->cancelArrest(*players[i]);
                                     std::cout << player.name << " (Spy) canceled arrest for " << players[i]->name << std::endl;
+                                    msg = "Arrest for " + players[i]->name + " has been canceled.";
+                                    PopupWindow popup("Cancel Arrest", msg, mainFont);
+                                    popup.draw();
                                 } else {
                                     throw std::runtime_error("Only Spy can Cancel Arrest");
                                 }
@@ -414,8 +491,10 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                             }
                             done = true;
                             popup.close();
+                            return players[i].get(); 
                         } catch (const std::exception& e) {
                             errorMsg = e.what();
+                            return nullptr;
                         }
                         break;
                     }
@@ -425,6 +504,7 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
                 if (cancelBtn.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
                     done = true;
                     popup.close();
+                    return nullptr;
                 }
             }
         }
@@ -446,4 +526,5 @@ void GUI::actionInterface(string actionName, Player& player, std::vector<std::un
         }
         popup.display();
     }
+    return nullptr;
 }

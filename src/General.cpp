@@ -1,4 +1,4 @@
-
+//fikhman2005@gmail.com
 #include "../include/General.hpp"
 namespace coup
 {
@@ -7,7 +7,6 @@ namespace coup
     }
     void General::coup_immune(Player &target) {
         checkBeforeAction("coup_immune", 5);
-        removeCoins(5);
         target.isCoupImmune=true;
         doAfterAction();
     }

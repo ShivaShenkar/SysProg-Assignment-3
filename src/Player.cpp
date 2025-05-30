@@ -1,3 +1,4 @@
+//fikhman2005@gmail.com
 #include "../include/Player.hpp"
 
 namespace coup{
@@ -104,6 +105,13 @@ namespace coup{
 
 
     void Player::checkBeforeAction(string action,int price, Player *target) {
+        if(action!="coup_immune"){
+            if(target==this)
+                        throw std::runtime_error("Player can't do action on himself");
+        }
+        if(game.players().size() < 2) {
+            throw std::runtime_error("Not enough players in the game");
+        }
         if (!game.has_name(name))
             throw std::runtime_error("Player not found in the game");
         
@@ -151,6 +159,8 @@ namespace coup{
     }
 
     void Player::doAfterAction(bool lastActionWasTax,string nameArrested) {
+        if(!game.is_game_on())
+            game.set_game_active();
         if(bribeFlag) {
             bribeFlag = false;
         }

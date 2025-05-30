@@ -1,3 +1,4 @@
+//fikhman2005@gmail.com
 #include "../include/Judge.hpp"
 
 namespace coup{
@@ -5,6 +6,9 @@ namespace coup{
         type = "Judge";
     }
     void Judge::undo(Player &target){
+        if(&target == this) {
+            throw std::runtime_error("Judge cannot undo their own action");
+        }
         if(target.bribeFlag) {
             target.bribeFlag = false;
             

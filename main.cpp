@@ -1,3 +1,4 @@
+//fikhman2005@gmail.com
 #include "include/gui.hpp"
 
 int main() {
